@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Management</title>
+    <script>
+        !function(){  
+          if (!window.churnkey || !window.churnkey.created) {
+            window.churnkey = { created: true };
+            const a = document.createElement('script');
+            a.src = 'https://assets.churnkey.co/js/app.js?appId=YOUR_APP_ID';
+            a.async = true;
+            const b = document.getElementsByTagName('script')[0];
+            b.parentNode.insertBefore(a, b);
+          }
+        }();
+        </script>
+</head>
+<body>
+    <h1>Account Management</h1>
+    <button id="cancel-button">Cancel Subscription</button>
+
+    <script>
+        async function fetchAuthHash() {
+            try {
+                const response = await fetch('/generate-hash');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                return data.authHash;
+            } catch (error) {
+                console.error('Failed to fetch auth hash:', error);
+                return null;
+            }
+        }
+
+        document.getElementById('cancel-button').addEventListener('click', async function() {
+            const authHash = await fetchAuthHash();
+            console.log(authHash)
+            if (authHash) {
+                window.churnkey.init('show', {
+                    customerId: 'cus_QVBhnykr03RYfs',
+                    authHash: authHash,
+                    appId: 'vupg9mh6t',
+                    mode: 'test',
+                    provider: 'stripe',
+                    preview: true,
+                    record: false,
+                    report: false,
+                });
+            } else {
+                alert('Failed to initialize cancel flow. Please try again later.');
+            }
+        });
+    </script>
+</body>
+</html>
